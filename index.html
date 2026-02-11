@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT WebSocket Demo</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+
+<p id="output">Warte auf Nachrichten...</p>
+
+<script>
+    // Broker-Einstellungen (anpassen)
+    const broker = "wss://qb0c8ff7.ala.eu-central-1.emqxsl.com:8084";
+    const topic = "test/topic";
+
+    // Verbindung herstellen
+    const client = mqtt.connect(broker);
+
+    client.on("connect", function () {
+        console.log("Verbunden");
+        client.subscribe(topic);
+    });
+
+    client.on("message", function (topic, message) {
+        document.getElementById("output").textContent = message.toString();
+    });
+
+    client.on("error", function (err) {
+        console.error("Fehler:", err);
+    });
+</script>
+
+</body>
+</html>
