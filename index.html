@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>MQTT WebSocket Demo</title>
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
@@ -10,12 +9,15 @@
 <p id="output">Warte auf Nachrichten...</p>
 
 <script>
-    // Broker-Einstellungen (anpassen)
-    const broker = "wss://qb0c8ff7.ala.eu-central-1.emqxsl.com:8084";
-    const topic = "test/topic";
+    const client = mqtt.connect("wss://qb0c8ff7.ala.eu-central-1.emqxsl.com:8084", {
+        username: "webUs",
+        password: "qaywsxedc",
+        clientId: "webclient_" + Math.random().toString(16).substr(2, 8),
+        clean: true,
+        reconnectPeriod: 2000
+    });
 
-    // Verbindung herstellen
-    const client = mqtt.connect(broker);
+    const topic = "testtopic/1";
 
     client.on("connect", function () {
         console.log("Verbunden");
