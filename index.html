@@ -2,35 +2,74 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <title>MQTT Web Client</title>
+    <script src="https://unpkg.com/mqtt@4.3.7/dist/mqtt.min.js"></script>
 </head>
 <body>
 
+<h3>MQTT Nachricht</h3>
 <p id="output">Warte auf Nachrichten...</p>
 
+<h3>Debug Konsole</h3>
+<p id="console" style="white-space: pre-wrap; font-family: monospace; border: 1px solid #ccc; padding: 10px;">
+--- Konsole ---
+</p>
+
 <script>
+    const output = document.getElementById("output");
+    const consoleOutput = document.getElementById("console");
+
+    function log(message) {
+        const time = new Date().toLocaleTimeString();
+        consoleOutput.textContent += "\n[" + time + "] " + message;
+    }
+
+    log("Starte Verbindung...");
+
     const client = mqtt.connect("wss://qb0c8ff7.ala.eu-central-1.emqxsl.com:8084", {
         username: "webUs",
         password: "qaywsxedc",
         clientId: "webclient_" + Math.random().toString(16).substr(2, 8),
         clean: true,
-        reconnectPeriod: 2000
+        reconnectPeriod: 2000,
+        connectTimeout: 5000
     });
 
     const topic = "testtopic/1";
 
     client.on("connect", function () {
-        console.log("Verbunden");
-        client.subscribe(topic);
+        log("Verbunden mit Broker");
+        client.subscribe(topic, function (err) {
+            if (err) {
+                log("Subscribe Fehler: " + err.message);
+            } else {
+                log("Abonniert: " + topic);
+            }
+        });
     });
 
     client.on("message", function (topic, message) {
-        document.getElementById("output").textContent = message.toString();
+        const msg = message.toString();
+        log("Nachricht empfangen auf " + topic + ": " + msg);
+        output.textContent = msg;
     });
 
     client.on("error", function (err) {
-        console.error("Fehler:", err);
+        log("Fehler: " + err.message);
     });
+
+    client.on("reconnect", function () {
+        log("Versuche neu zu verbinden...");
+    });
+
+    client.on("close", function () {
+        log("Verbindung geschlossen");
+    });
+
+    client.on("offline", function () {
+        log("Client ist offline");
+    });
+
 </script>
 
 </body>
