@@ -26,7 +26,7 @@
 
     log("Starte Verbindung...");
 
-    const client = mqtt.connect("wss://qb0c8ff7.ala.eu-central-1.emqxsl.com:8084", {
+    const client = mqtt.connect("wss://qb0c8ff7.ala.eu-central-1.emqxsl.com:8084/mqtt", {
         username: "webUs",
         password: "qaywsxedc",
         clientId: "webclient_" + Math.random().toString(16).substr(2, 8),
